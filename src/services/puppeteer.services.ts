@@ -1,8 +1,7 @@
-import StealthPlugin from 'puppeteer-extra-plugin-stealth';
-import UserAgent from 'user-agents';
 import puppeteer from 'puppeteer-extra';
-import { Page } from 'puppeteer';
-
+import StealthPlugin from 'puppeteer-extra-plugin-stealth';
+import antibotbrowser from 'antibotbrowser';
+// Set up plugins
 puppeteer.use(StealthPlugin());
 
 interface Product {
@@ -30,22 +29,6 @@ interface SearchItem {
     productPage: number;
 }
 
-// Function to detect CAPTCHA presence
-async function isCaptchaDetected(page: Page) {
-    return await page.evaluate(() => {
-        const captchaText = document.body.innerText;
-        return captchaText.includes('Verify you are human') || 
-               captchaText.includes('Please complete the CAPTCHA') || 
-               document.querySelector('label.cb-lb') !== null;
-    });
-}
-
-// Function to add delays and mouse movements for stealth
-async function mimicHumanBehavior(page: Page) {
-    await new Promise(resolve => setTimeout(resolve, 2000 + Math.floor(Math.random() * 3000))); // Random delay
-    // await page.mouse.move(Math.random() * 500, Math.random() * 500);    // Random mouse move
-}
-
 export async function scrapeProducts(
     searchTerms: SearchItem[],
     isBudgetValuePresent: boolean,
@@ -53,12 +36,16 @@ export async function scrapeProducts(
     minBudgetValue: number = -1
 ): Promise<ScrapeResult> {
 
-    const browser = await puppeteer.launch({
-        headless: false
-    });
+    const antibrowser = await antibotbrowser.startbrowser(9222);  
 
+    const browser = await puppeteer.connect({browserWSEndpoint: antibrowser.websokcet});
+
+    // const browser = await puppeteer.launch();
     const page = await browser.newPage();
-    // await page.setUserAgent(userAgent.toString()); // Set random user agent
+    // Set random user agent for stealth
+    // const userAgent = new UserAgent();
+    // await page.setUserAgent(userAgent.toString());
+    // await page.setUserAgent('Mozilla/5.0 (Windows NT 5.1; rv:5.0) Gecko/20100101 Firefox/5.0')
     await page.setViewport({ width: 1366, height: 768 });
     await page.setRequestInterception(true);
 
@@ -83,14 +70,6 @@ export async function scrapeProducts(
                 try {
                     console.log(`Navigating to: ${url} (Attempt ${attempt})`);
                     await page.goto(url, { waitUntil: 'domcontentloaded' });
-
-                    // Detect if CAPTCHA is present
-                    if (await isCaptchaDetected(page)) {
-                        console.log('CAPTCHA detected, refreshing page...');
-                        await page.reload({ waitUntil: 'domcontentloaded' });
-                        attempt--; // Retry the same attempt
-                        continue;
-                    }
 
                     // Wait for product tiles to load
                     await page.waitForSelector('.search-product-tile', { timeout: 20000 });
