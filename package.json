@@ -6,23 +6,22 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon --exec ts-node-esm src/index.ts",
-    "build": "tsc",
-    "start": "node dist/index.js"
+ "build": "tsc",
+  "start": "node dist/index.js"
   },
   "dependencies": {
     "@puppeteer/browsers": "^2.4.1",
     "@types/puppeteer": "^7.0.4",
-    "antibotbrowser": "^2.0.0",
+    "chrome-launcher": "^1.1.2",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "nodemon": "^3.1.7",
-    "puppeteer": "^23.8.0",
+    "puppeteer": "^23.9.0",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-recaptcha": "^3.6.8",
-    "puppeteer-extra-plugin-stealth": "^2.11.2",
-    "user-agents": "^1.1.347"
+    "puppeteer-extra-plugin-stealth": "^2.11.2"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",

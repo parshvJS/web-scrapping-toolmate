@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import http from 'http'
 import app from './app.js';
 import scraperRoute from './route/v1/Scaraper.route.js';
+import puppeteer from 'puppeteer';
 dotenv.config();
 const core = express()
 
@@ -33,6 +34,8 @@ core.get('/',(req,res)=>{
 // server listener
 const server = http.createServer(core)
 server.listen(PORT, () => {
+    console.log('Using Chrome at:', puppeteer.executablePath());
+
     console.log(`Server is running on port ${PORT}`)
 })
 
