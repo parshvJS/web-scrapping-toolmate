@@ -9,11 +9,9 @@ COPY package*.json ./
 RUN npm ci
 COPY . .
 
-# Change ownership of the application files
-RUN chown -R pptruser:pptruser /usr/src/app
+RUN npm install
+RUN npm run build
 
 USER pptruser
 
-RUN npm install
-RUN npm run build
 CMD [ "node", "dist/index.js" ]
